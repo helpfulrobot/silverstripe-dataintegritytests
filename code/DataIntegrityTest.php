@@ -36,6 +36,7 @@ class DataIntegrityTest extends DevelopmentAdmin {
 		echo "<p><a href=\"".Director::absoluteBaseURL()."dbintegritycheck/obsoletefields/\">Prepare a list of obsolete fields.</a></p>";
 		echo "<p><a href=\"".Director::absoluteBaseURL()."dbintegritycheck/deletemarkedfields/\" onclick=\"return confirm('".self::$warning."');\">Delete fields listed in _config.</a></p>";
 		echo "<p><a href=\"".Director::absoluteBaseURL()."dbintegritycheck/obsoletefields/immediately/destroyed/\" onclick=\"return confirm('".self::$warning."');\">Delete obsolete fields now!</a></p>";
+		echo "<p><a href=\"".Director::absoluteBaseURL()."dbintegritycheck/resetcharacterencoding/\" onclick=\"return confirm('".self::$warning."');\">Delete obsolete fields now!</a></p>";
 	}
 
 	public function obsoletefields(SS_HTTPRequest $request) {
@@ -180,6 +181,18 @@ class DataIntegrityTest extends DevelopmentAdmin {
 		}
 
 		echo "<a href=\"".Director::absoluteURL("/dbintegritycheck")."\">back to main menu.</a>";
+	}
+
+	public function resetcharacterencoding(){
+		$rows = DB::query("SHOW TABLES;");
+		if($rows) {
+			foreach($rows as $key => $item) {
+				foreach($item as $table) {
+					DB::query("ALTER TABLE  \"$table\" DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci");
+					DB::alteration_message("Resetting table ($table) character set to UTF-8 ");
+				}
+			}
+		}
 	}
 
 	public function deletemarkedfields() {
